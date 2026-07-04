@@ -1,13 +1,10 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST" });
   }
 
   try {
-    const {
-      text = "",
-      persona_id = "tong"
-    } = req.body || {};
+    const { text = "", persona_id = "tong" } = req.body || {};
 
     const styleMap = {
       tong: `
@@ -54,12 +51,11 @@ export default async function handler(req, res) {
       }
     ];
 
-    // 这里替换成你自己的上游 AI 调用
     const upstreamResp = await fetch(process.env.AI_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.AI_API_KEY}`
+        Authorization: `Bearer ${process.env.AI_API_KEY}`
       },
       body: JSON.stringify({
         model: process.env.AI_MODEL,
@@ -69,7 +65,6 @@ export default async function handler(req, res) {
 
     const data = await upstreamResp.json();
 
-    // 这里按你上游返回结构改一下
     const result =
       data?.choices?.[0]?.message?.content ||
       data?.output_text ||
@@ -83,4 +78,4 @@ export default async function handler(req, res) {
       detail: String(err?.message || err)
     });
   }
-}
+};
